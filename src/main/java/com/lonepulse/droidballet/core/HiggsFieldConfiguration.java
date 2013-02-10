@@ -84,7 +84,7 @@ public class HiggsFieldConfiguration {
 	 * 
 	 * @since 1.0.0
 	 */
-	private Application application;
+	private final Application application;
 	
 	
 	/**
