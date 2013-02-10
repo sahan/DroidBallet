@@ -1,4 +1,5 @@
-bin
-gen
-target
 .settings
+droidballet/bin
+droidballet/gen
+droidballet/target
+droidballet/.settings
