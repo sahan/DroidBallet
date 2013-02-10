@@ -3,3 +3,8 @@ droidballet/bin
 droidballet/gen
 droidballet/target
 droidballet/.settings
+droidballet-it/bin
+droidballet-it/gen
+droidballet-it/target
+droidballet-it/.settings
+droidballet-it/tmp
