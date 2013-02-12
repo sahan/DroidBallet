@@ -28,6 +28,7 @@ import android.widget.ListView;
 
 import com.lonepulse.droidballet.listener.VerticalMotionEvent;
 import com.lonepulse.droidballet.listener.VerticalMotionListener;
+import com.lonepulse.droidballet.listener.VerticalMotionEvent.VERTICAL_DIRECTION;
 import com.lonepulse.droidballet.registry.MotionViewRegistry;
 
 /**
@@ -41,6 +42,16 @@ import com.lonepulse.droidballet.registry.MotionViewRegistry;
  */
 public class MotionListView extends ListView implements MotionView, VerticalMotionListener {
 
+
+	/**
+	 * <p>The minimum scroll duration in milliseconds.
+	 */
+	private static final int DURATION = 1000;
+	
+	/**
+	 * <p>A factor which represents the relative speed of the motion. 
+	 */
+	private static final float FRICTION = 2.0f;
 	
 	/**
 	 * <p>A flag which determines if motion scrolling is to be disabled momentarily.
@@ -122,8 +133,17 @@ public class MotionListView extends ListView implements MotionView, VerticalMoti
 	@Override
 	public void onMotionUp(VerticalMotionEvent event) {
 
-		if(!scrollDisabled)
-			smoothScrollBy(event.getScrollDistance(), event.getScrollDuration());
+		if(!scrollDisabled) {
+		
+			int yAxisReading = MotionListView.processYAxisReading(event.getDirection(), 
+																  event.getFilteredOutput()[1], 
+																  event.getSensorEvent().sensor.getMaximumRange());
+			
+			int scrollDistance = processScrollDistance(yAxisReading);
+			int scrollDuration = processScrollDuration(yAxisReading);
+			
+			smoothScrollBy(scrollDistance, scrollDuration);
+		}
 	}
 
 	/**
@@ -132,14 +152,73 @@ public class MotionListView extends ListView implements MotionView, VerticalMoti
 	@Override
 	public void onMotionDown(VerticalMotionEvent event) {
 		
-		if(!scrollDisabled)
-			smoothScrollBy(event.getScrollDistance(), event.getScrollDuration());
+		if(!scrollDisabled) {
+		
+			int yAxisReading = MotionListView.processYAxisReading(event.getDirection(), 
+												                  event.getFilteredOutput()[1], 
+												                  event.getSensorEvent().sensor.getMaximumRange());
+			
+			int scrollDistance = processScrollDistance(yAxisReading);
+			int scrollDuration = processScrollDuration(yAxisReading);
+			
+			smoothScrollBy(scrollDistance, scrollDuration);
+		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onMotionRest(VerticalMotionEvent event) {
+	public void onMotionRest(VerticalMotionEvent event) {}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int processScrollDistance(int yAxisReading) {
+		
+		return (int) (yAxisReading * Math.pow(yAxisReading, FRICTION));
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int processScrollDuration(int yAxisReading) {
+
+		return (int) (DURATION + Math.pow(yAxisReading, FRICTION));
+	}
+	
+	/**
+	 * <p>Takes the motion sensor reading on the Y-Axis and 
+	 * converts it to a vector with a direction. This reading 
+	 * is specific to {@link MotionListView}s.
+	 *
+	 * @param direction
+	 *  		the {@link VERTICAL_DIRECTION} of the motion
+	 *  
+	 * @param sensorReading
+	 * 			the sensor reading on the Y-Axis
+	 *  
+	 * @param maxSensorReading
+	 * 			the maximum value which can be reached by a 
+	 * 			sensor reading 
+	 *  
+	 * @return the processed Y-Axis sensor reading
+	 */
+	private static int processYAxisReading(VERTICAL_DIRECTION direction, 
+										   float sensorReading, 
+										   float maxSensorReading) {
+		
+		switch (direction) {
+		
+			case UP:
+				return (int) (-1 * (maxSensorReading + sensorReading));
+				
+			case DOWN:
+				return (int) sensorReading;
+				
+			case NONE: default: return 0;
+		}
 	}
 }

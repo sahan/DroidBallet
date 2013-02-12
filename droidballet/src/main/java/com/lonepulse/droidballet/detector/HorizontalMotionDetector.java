@@ -23,7 +23,6 @@ package com.lonepulse.droidballet.detector;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.util.Log;
-import android.view.View;
 
 import com.lonepulse.droidballet.filter.LowPassFilter;
 import com.lonepulse.droidballet.filter.SmoothingFilter;
@@ -42,16 +41,6 @@ import com.lonepulse.droidballet.listener.HorizontalMotionEvent.HORIZONTAL_DIREC
 public class HorizontalMotionDetector implements MotionDetector<HorizontalMotionEvent> {
 	
 	
-	/**
-	 * <p>The minimum scroll duration in milliseconds.
-	 */
-	private static final int MINIMUM_DURATION = 1000;
-	
-	/**
-	 * <p>A factor which represents the relative speed of the motion. 
-	 */
-	private static final float FRICTION = 2.0f;
-
 	/**
 	 * <p>The instance of the {@link SmoothingFilter} which is used to smooth 
 	 * out the values from the motion sensor.
@@ -122,12 +111,7 @@ public class HorizontalMotionDetector implements MotionDetector<HorizontalMotion
 
 		HORIZONTAL_DIRECTION direction = processHorizontalDirection(output, midRangeHigh, midRangeLow);
 		
-		int yAxisReading = processXAxisReading(direction, output[0], max);
-		
-		int scrollDistance = processScrollDistance(yAxisReading);
-		int scrollDuration = processScrollDuration(yAxisReading);
-
-		return new HorizontalMotionEvent(sensorEvent, direction, scrollDistance, scrollDuration);
+		return new HorizontalMotionEvent(sensorEvent, direction, output);
 	}
 
 	/**
@@ -163,63 +147,5 @@ public class HorizontalMotionDetector implements MotionDetector<HorizontalMotion
 
 			return HORIZONTAL_DIRECTION.NONE;
 		}
-	}
-	
-	/**
-	 * <p>Takes the motion sensor reading on the X-Axis and converts it 
-	 * to a vector with a direction.
-	 *
-	 * @param direction
-	 *  		the {@link HORIZONTAL_DIRECTION} of the motion
-	 *  
-	 * @param sensorReading
-	 * 			the sensor reading on the X-Axis
-	 *  
-	 * @param maxSensorReading
-	 * 			the maximum value which can be reached by a sensor reading 
-	 *  
-	 * @return the processed X-Axis sensor reading
-	 */
-	private int processXAxisReading(HORIZONTAL_DIRECTION direction, float sensorReading, float maxSensorReading) {
-		
-		switch (direction) {
-		
-			case LEFT:
-				return (int) (-1 * (maxSensorReading + sensorReading));
-				
-			case RIGHT:
-				return (int) sensorReading;
-				
-			case NONE: default: 
-				return 0;
-		}
-	}
-	
-	/**
-	 * <p>Determines the distance which the {@link View} or <i>view group</i> should scroll 
-	 * in response to the horizontal motion.
-	 *
-	 * @param yAxisReading
-	 *  		the processed sensor reading on the yAxis
-	 * 
-	 * @return the scroll distance
-	 */
-	private int processScrollDistance(int yAxisReading) {
-		
-		return (int) (yAxisReading * Math.pow(yAxisReading, FRICTION));
-	}
-	
-	/**
-	 * <p>Determines the duration which the {@link View} or <i>view group</i> should scroll 
-	 * in response to the horizontal motion.
-	 *
-	 * @param yAxisReading
-	 *  		the processed sensor reading on the yAxis
-	 * 
-	 * @return the scroll duration
-	 */
-	private int processScrollDuration(int yAxisReading) {
-		
-		return (int) (MINIMUM_DURATION + Math.pow(yAxisReading, FRICTION));
 	}
 }

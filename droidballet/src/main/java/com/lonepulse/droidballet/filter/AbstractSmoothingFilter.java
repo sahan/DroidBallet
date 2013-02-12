@@ -22,6 +22,9 @@ package com.lonepulse.droidballet.filter;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+
+import android.annotation.SuppressLint;
 
 /**
  * <p>An abstract implementation of a {@link SmoothingFilter} which handles the algorithm 
@@ -31,7 +34,7 @@ import java.util.Map;
  * should be invoked.
  * 
  * @version 1.0.0
- * 
+ * <br><br>
  * @author <a href="mailto:lahiru@lonepulse.com">Lahiru Sahan Jayasinghe</a>
  */
 public abstract class AbstractSmoothingFilter implements SmoothingFilter {
@@ -41,6 +44,7 @@ public abstract class AbstractSmoothingFilter implements SmoothingFilter {
 	 * <p>A {@link Map} which contains all the arguments used in the filter 
 	 * and their associated types. 
 	 */
+	@SuppressLint("UseSparseArrays")
 	private Map<Integer, Class<?>> argTypes = new HashMap<Integer, Class<?>>();
 	
 
@@ -104,7 +108,8 @@ public abstract class AbstractSmoothingFilter implements SmoothingFilter {
 	 * 			when the algorithm is erroneous or it cannot execute due to 
 	 * 			the supplied parameters 
 	 */
-	private void validate(float[] input, float[] output, Map<Integer, ? extends Object> args) throws SmoothingFilterException {
+	private void validate(float[] input, float[] output, Map<Integer, ? extends Object> args) 
+	throws SmoothingFilterException {
 		
 		if(input == null)
 			throw new SmoothingFilterException(getClass(), "Input array is null.", new NullPointerException());
@@ -118,16 +123,27 @@ public abstract class AbstractSmoothingFilter implements SmoothingFilter {
 		
 		if(args != null) {
 			
-			for (Integer argId : argTypes.keySet()) {
+			Set<Integer> keys = argTypes.keySet();
+			
+			for (Integer argId :keys) {
 				
-				if(!args.containsKey(argId))
+				if(!args.containsKey(argId)) {
+					
 						throw new SmoothingFilterException(getClass(), 
 								"Arguments do not contain an identifier with value " + argId + ". ");
+				}
 				
-				if(!(args.get(argId).getClass().equals(argTypes.get(argId))))
-					throw new SmoothingFilterException(getClass(), 
-							"Arguments with identifier " + argId + " is not of registered type " + 
-							 argTypes.get(argId).getName() + ". ");
+				if(!(args.get(argId).getClass().equals(argTypes.get(argId)))) {
+				
+					StringBuilder builder = new StringBuilder()
+					.append("Arguments with identifier ")
+					.append(argId)
+					.append(" is not of registered type ")
+					.append(argTypes.get(argId).getName())
+					.append(". ");
+					
+					throw new SmoothingFilterException(getClass(), builder.toString());
+				}
 			}
 		}
 	}
@@ -136,7 +152,8 @@ public abstract class AbstractSmoothingFilter implements SmoothingFilter {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public float[] filter(float[] input, float[] output, Map<Integer, ? extends Object> args) throws SmoothingFilterException {
+	public float[] filter(float[] input, float[] output, Map<Integer, ? extends Object> args) 
+	throws SmoothingFilterException {
 
 		try {
 		

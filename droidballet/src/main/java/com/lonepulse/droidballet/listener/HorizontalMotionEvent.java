@@ -21,15 +21,16 @@ package com.lonepulse.droidballet.listener;
  */
 
 
+import com.lonepulse.droidballet.filter.SmoothingFilter;
+
 import android.hardware.SensorEvent;
-import android.view.View;
 import android.view.ViewGroup;
 
 /**
  * <p>Holds information about a single <i>vertical</i> scroll event which 
  * has been fired on a Widget or {@link ViewGroup}.</i></p>
  * 
- * @version 1.0.0
+ * @version 1.1.0
  * 
  * @author <a href="mailto:lahiru@lonepulse.com">Lahiru Sahan Jayasinghe</a>
  */
@@ -42,7 +43,7 @@ public class HorizontalMotionEvent extends AbstractMotionEvent {
 	 * <p>More information on the sensor coordinates can be found 
 	 * <a href="http://developer.android.com/guide/topics/sensors/sensors_overview.html#sensors-coords">here</a>.</p>
 	 * 
-	 * @version 1.0.0
+	 * @version 1.1.0
 	 * 
 	 * @author <a href="mailto:lahiru@lonepulse.com">Lahiru Sahan Jayasinghe</a>
 	 */
@@ -66,7 +67,7 @@ public class HorizontalMotionEvent extends AbstractMotionEvent {
 		 * <p>{@link MotionEvent}s of this direction are mapped to 
 		 * {@link VerticalMotionListener#onMotionRest(VerticalMotionEvent)}</p>.
 		 * 
-		 * @since 1.0.0
+		 * @since 1.1.0
 		 */
 		NONE,
 		
@@ -82,7 +83,7 @@ public class HorizontalMotionEvent extends AbstractMotionEvent {
 		* <p>{@link MotionEvent}s of this direction are mapped to 
 		* {@link HorizontalMotionListener#onMotionLeft(HorizontalMotionEvent)}</p>.
 		 * 
-		 * @since 1.0.0
+		 * @since 1.1.0
 		 */
 		LEFT,
 		
@@ -98,7 +99,7 @@ public class HorizontalMotionEvent extends AbstractMotionEvent {
 		* <p>{@link MotionEvent}s of this direction are mapped to 
 		* {@link HorizontalMotionListener#onMotionRight(HorizontalMotionEvent)}</p>.
 		 * 
-		 * @since 1.0.0
+		 * @since 1.1.0
 		 */
 		RIGHT;
 	}
@@ -107,36 +108,8 @@ public class HorizontalMotionEvent extends AbstractMotionEvent {
 	/**
 	 * <p>Specifies the direction of the scroll movement along the X-Axis of 
 	 * the sensor coordinate system.
-	 * 
-	 * @since 1.0.0
 	 */
 	private HORIZONTAL_DIRECTION direction;
-	
-	/**
-	 * <p>An <i>indication</i> of the distance which a {@link View} should 
-	 * <b>scroll</b> in response to this {@link HorizontalMotionEvent}.
-	 * 
-	 * <p><b>Note</b> that this value is a <i>vector</i> whose <i>direction</i> 
-	 * is determined by the <i>sign</i> on the number.</p>
-	 * 
-	 * <ul>
-	 * 		<li>Positive (+X): {@link HORIZONTAL_DIRECTION#RIGHT}
-	 *  	<li>Negative (-X): {@link HORIZONTAL_DIRECTION#LEFT}
-	 *  	<li>Signless  (0): {@link HORIZONTAL_DIRECTION#NONE}
-	 * </ul>
-	 *  
-	 * @since 1.0.0
-	 */
-	private int scrollDistance;
-
-	/**
-	 * <p>An <i>indication</i> of the time span which should be used for the 
-	 * {@link View} to <b>scroll</b> the length of {@link #scrollDistance} 
-	 * in response to this {@link HorizontalMotionEvent}.
-	 * 
-	 * @since 1.0.0
-	 */	
-	private int scrollDuration;
 
 	
 	/**
@@ -148,48 +121,30 @@ public class HorizontalMotionEvent extends AbstractMotionEvent {
 	 * @param direction
 	 * 			the {@link #direction} of the vertical motion
 	 * 
-	 * @param scrollDistance
-	 * 			the {@link #scrollDistance} of the vertical motion
+	 * @param filteredOutput
+	 * 			the sensor output values which have been filtered 
+	 * 			through a {@link SmoothingFilter}
 	 * 
-	 * @param scrollDuration
-	 * 			the {@link #scrollDuration} of the vertical motion
+	 * @since 1.1.0
 	 */
-	public HorizontalMotionEvent(SensorEvent sensorEvent, HORIZONTAL_DIRECTION direction, int scrollDistance, int scrollDuration) {
+	public HorizontalMotionEvent(SensorEvent sensorEvent, 
+								 HORIZONTAL_DIRECTION direction, 
+								 float[] filteredOutput) {
 		
-		super(sensorEvent);
+		super(sensorEvent, filteredOutput);
 		
 		this.direction = direction;
-		this.scrollDistance = scrollDistance;
-		this.scrollDuration = scrollDuration;
 	}
 	
 	/**
 	 * <p>Accessor for {@link #direction}.
 	 * 
 	 * @return {@link #direction}
+	 * 
+	 * @since 1.1.0
 	 */
 	public HORIZONTAL_DIRECTION getDirection() {
 		
 		return direction;
 	}
-	
-	/**
-	 * <p>Accessor for {@link #scrollDistance}.
-	 * 
-	 * @return {@link #scrollDistance}
-	 */
-	public int getScrollDistance() {
-		
-		return scrollDistance;
-	}
-
-	/**
-	 * <p>Accessor for {@link #scrollDuration}.
-	 * 
-	 * @return {@link #scrollDuration}
-	 */
-	public int getScrollDuration() {
-		
-		return scrollDuration;
-	}	
 }

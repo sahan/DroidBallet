@@ -23,7 +23,6 @@ package com.lonepulse.droidballet.detector;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.util.Log;
-import android.view.View;
 
 import com.lonepulse.droidballet.filter.LowPassFilter;
 import com.lonepulse.droidballet.filter.SmoothingFilter;
@@ -35,22 +34,12 @@ import com.lonepulse.droidballet.listener.VerticalMotionEvent.VERTICAL_DIRECTION
  * <p>A concrete implementation of {@link MotionDetector} which detects <b>vertical
  * motion</b>.
  * 
- * @version 1.0.0
+ * @version 1.1.0
  * 
  * @author <a href="mailto:lahiru@lonepulse.com">Lahiru Sahan Jayasinghe</a>
  */
 public class VerticalMotionDetector implements MotionDetector<VerticalMotionEvent> {
 	
-	
-	/**
-	 * <p>The minimum scroll duration in milliseconds.
-	 */
-	private static final int MINIMUM_DURATION = 1000;
-	
-	/**
-	 * <p>A factor which represents the relative speed of the motion. 
-	 */
-	private static final float FRICTION = 2.0f;
 
 	/**
 	 * <p>The instance of the {@link SmoothingFilter} which is used to smooth out
@@ -77,6 +66,8 @@ public class VerticalMotionDetector implements MotionDetector<VerticalMotionEven
 	 * choice.
 	 * 
 	 * @return a new instance of {@link VerticalMotionDetector}
+	 * 
+	 * @since 1.1.0
 	 */
 	public static final VerticalMotionDetector newInstance() {
 
@@ -108,7 +99,7 @@ public class VerticalMotionDetector implements MotionDetector<VerticalMotionEven
 
 			smoothingFilter.filter(input, output, null);
 		} 
-		catch (SmoothingFilterException sfe) { //TODO use an alternative filter
+		catch (SmoothingFilterException sfe) {
 
 			Log.w(getClass().getName(), 
 				  "Failed to execute " + smoothingFilter.getClass().getName() + " on " + input);
@@ -122,12 +113,7 @@ public class VerticalMotionDetector implements MotionDetector<VerticalMotionEven
 
 		VERTICAL_DIRECTION direction = processVerticalDirection(output, midRangeHigh, midRangeLow);
 		
-		int yAxisReading = processYAxisReading(direction, output[1], max);
-		
-		int scrollDistance = processScrollDistance(yAxisReading);
-		int scrollDuration = processScrollDuration(yAxisReading);
-
-		return new VerticalMotionEvent(sensorEvent, direction, scrollDistance, scrollDuration);
+		return new VerticalMotionEvent(sensorEvent, direction, output);
 	}
 
 	/**
@@ -164,63 +150,5 @@ public class VerticalMotionDetector implements MotionDetector<VerticalMotionEven
 			return VERTICAL_DIRECTION.NONE;
 		}
 	}
-	
-	/**
-	 * <p>Takes the motion sensor reading on the Y-Axis and converts it 
-	 * to a vector with a direction.
-	 *
-	 * @param direction
-	 *  		the {@link VERTICAL_DIRECTION} of the motion
-	 *  
-	 * @param sensorReading
-	 * 			the sensor reading on the Y-Axis
-	 *  
-	 * @param maxSensorReading
-	 * 			the maximum value which can be reached by a sensor reading 
-	 *  
-	 * @return the processed Y-Axis sensor reading
-	 */
-	private int processYAxisReading(VERTICAL_DIRECTION direction, float sensorReading, float maxSensorReading) {
-		
-		switch (direction) {
-		
-			case UP:
-				return (int) (-1 * (maxSensorReading + sensorReading));
-				
-			case DOWN:
-				return (int) sensorReading;
-				
-			case NONE:
-			default:
-				return 0;
-		}
-	}
-	
-	/**
-	 * <p>Determines the distance which the {@link View} or <i>view group</i> should scroll 
-	 * in response to the vertical motion.
-	 *
-	 * @param yAxisReading
-	 *  		the processed sensor reading on the yAxis
-	 * 
-	 * @return the scroll distance
-	 */
-	private int processScrollDistance(int yAxisReading) {
-		
-		return (int) (yAxisReading * Math.pow(yAxisReading, FRICTION));
-	}
-	
-	/**
-	 * <p>Determines the duration which the {@link View} or <i>view group</i> should scroll 
-	 * in response to the vertical motion.
-	 *
-	 * @param yAxisReading
-	 *  		the processed sensor reading on the yAxis
-	 * 
-	 * @return the scroll duration
-	 */
-	private int processScrollDuration(int yAxisReading) {
-		
-		return (int) (MINIMUM_DURATION + Math.pow(yAxisReading, FRICTION));
-	}
 }
+

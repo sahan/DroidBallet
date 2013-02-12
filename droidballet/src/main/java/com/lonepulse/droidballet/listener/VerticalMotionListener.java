@@ -20,6 +20,7 @@ package com.lonepulse.droidballet.listener;
  * #L%
  */
 
+import android.view.View;
 import android.widget.ListView;
 import android.widget.ScrollView;
 
@@ -34,8 +35,8 @@ import com.lonepulse.droidballet.listener.VerticalMotionEvent.VERTICAL_DIRECTION
  * implement this listener and handle the necessary <i>motion</i> in the provided 
  * callback methods.</p>
  * 
- * @version 1.0.0
- * 
+ * @version 1.1.0
+ * <br><br>
  * @author <a href="mailto:lahiru@lonepulse.com">Lahiru Sahan Jayasinghe</a>
  */
 public interface VerticalMotionListener extends MotionListener {
@@ -47,6 +48,8 @@ public interface VerticalMotionListener extends MotionListener {
 	 * @param event
 	 * 			the instance of {@link VerticalMotionEvent} which can be used to discover 
 	 * 			more information regarding the scroll
+	 * 
+	 * @since 1.1.0
 	 */
 	public abstract void onMotionUp(VerticalMotionEvent event);
 	
@@ -57,6 +60,8 @@ public interface VerticalMotionListener extends MotionListener {
 	 * @param event
 	 * 			the instance of {@link VerticalMotionEvent} which can be used to discover 
 	 * 			more information regarding the scroll
+	 * 
+	 * @since 1.1.0
 	 */
 	public abstract void onMotionDown(VerticalMotionEvent event);
 	
@@ -67,6 +72,34 @@ public interface VerticalMotionListener extends MotionListener {
 	 * @param event
 	 * 			the instance of {@link VerticalMotionEvent} which can be used to discover 
 	 * 			more information regarding the scroll
+	 * 
+	 * @since 1.1.0
 	 */	
 	public abstract void onMotionRest(VerticalMotionEvent event);
+	
+	/**
+	 * <p>Determines the distance which the {@link View} or <i>view group</i> should scroll 
+	 * in response to the vertical motion.
+	 *
+	 * @param yAxisReading
+	 *  		the processed sensor reading on the yAxis
+	 * 
+	 * @return the scroll distance
+	 * 
+	 * @since 1.1.0
+	 */
+	public abstract int processScrollDistance(int yAxisReading);
+	
+	/**
+	 * <p>Determines the duration which the {@link View} or <i>view group</i> should scroll 
+	 * in response to the vertical motion.
+	 *
+	 * @param yAxisReading
+	 *  		the processed sensor reading on the yAxis
+	 * 
+	 * @return the scroll duration
+	 * 
+	 * @since 1.1.0
+	 */
+	public abstract int processScrollDuration(int yAxisReading);
 }

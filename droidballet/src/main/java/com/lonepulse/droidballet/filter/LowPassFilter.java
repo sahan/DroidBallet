@@ -88,7 +88,8 @@ public class LowPassFilter extends AbstractSmoothingFilter {
 	 * <b>{@value #DEFAULT_APLPHA}</b>.
 	 */
 	@Override
-	protected float[] runAlgorithm(float[] input, float[] output, Map<Integer, ? extends Object> args) throws SmoothingFilterException {
+	protected float[] runAlgorithm(float[] input, float[] output, Map<Integer, ? extends Object> args) 
+	throws SmoothingFilterException {
 		
 		float alpha = DEFAULT_APLPHA;
 		
