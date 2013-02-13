@@ -21,14 +21,16 @@ package com.lonepulse.droidballet.widget;
  */
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ListView;
 
+import com.lonepulse.droidballet.R;
 import com.lonepulse.droidballet.listener.VerticalMotionEvent;
-import com.lonepulse.droidballet.listener.VerticalMotionListener;
 import com.lonepulse.droidballet.listener.VerticalMotionEvent.VERTICAL_DIRECTION;
+import com.lonepulse.droidballet.listener.VerticalMotionListener;
 import com.lonepulse.droidballet.registry.MotionViewRegistry;
 
 /**
@@ -36,8 +38,8 @@ import com.lonepulse.droidballet.registry.MotionViewRegistry;
  * by implementing {@link VerticalMotionListener} and performs the necessary UI updates 
  * for the respective callback methods.
  * 
- * @version 1.0.0
- * 
+ * @version 1.1.1
+ * <br><br>
  * @author <a href="mailto:lahiru@lonepulse.com">Lahiru Sahan Jayasinghe</a>
  */
 public class MotionListView extends ListView implements MotionView, VerticalMotionListener {
@@ -46,12 +48,15 @@ public class MotionListView extends ListView implements MotionView, VerticalMoti
 	/**
 	 * <p>The minimum scroll duration in milliseconds.
 	 */
-	private static final int DURATION = 1000;
+	private static final int DRAG_COEFFICIENT = 2;
 	
 	/**
-	 * <p>A factor which represents the relative speed of the motion. 
+	 * <p>Represents a force of resistivity whose vector opposes to that of the velocity.
+	 * A default friction factor of <b>0.75</b> is used where a comfortable range for this 
+	 * value lies between <b>0.0</b> and <b>1.0</b>. However, values beyond these bounds may 
+	 * be employed to produce breakneck speeds or to slow down to a snail's pace.
 	 */
-	private static final float FRICTION = 2.0f;
+	private float friction;
 	
 	/**
 	 * <p>A flag which determines if motion scrolling is to be disabled momentarily.
@@ -65,7 +70,8 @@ public class MotionListView extends ListView implements MotionView, VerticalMoti
 	public MotionListView(Context context) {
 	
 		super(context);
-		init();
+		
+		initListeners();
 	}
 	
 	/**
@@ -74,7 +80,9 @@ public class MotionListView extends ListView implements MotionView, VerticalMoti
 	public MotionListView(Context context, AttributeSet attrs) {
 	
 		super(context, attrs);
-		init();
+
+		initAttributes(context, attrs);
+		initListeners();
 	}
 	
 	/**
@@ -83,15 +91,36 @@ public class MotionListView extends ListView implements MotionView, VerticalMoti
 	public MotionListView(Context context, AttributeSet attrs, int defStyle) {
 
 		super(context, attrs, defStyle);
-		init();
+		
+		initAttributes(context, attrs);
+		initListeners();
+	}
+
+   /**
+    * <p>Initializes the view with the custom attributes which were declared 
+    * in the XML layout. This 
+    * 
+	* @param context
+	* 			the {@link Context} in which this component is instantiated
+	* 
+	* @param attributeSet
+	* 			the {@link AttributeSet} given in the layout declaration
+	*/
+	private void initAttributes(Context context, AttributeSet attributeSet) {
+		
+		TypedArray typedArray = context.obtainStyledAttributes(attributeSet, R.styleable.MotionView);
+		
+		friction = typedArray.getFloat(R.styleable.MotionView_friction, 0.75f) * 1000;
+			
+		typedArray.recycle();
 	}
 	
 	/**
 	 * <p>Initializes the {@link OnTouchListener} of this {@link ListView} which momentarily 
 	 * disables motion scrolling (by setting {@link #scrollDisabled} to <b>true</b>) while 
-	 * the user is actively interacting with the list. 
+	 * the user is actively interacting with the list.
 	 */
-	private void init() {
+	private void initListeners() {
 		
 		setOnTouchListener(new OnTouchListener() {
 
@@ -109,6 +138,31 @@ public class MotionListView extends ListView implements MotionView, VerticalMoti
 		});
 	}
 	
+	/**
+	 * <p>Accessor for {@link #friction}.
+	 *
+	 * @return the {@link #friction}
+	 * 
+	 * @since 1.1.1
+	 */
+	public float getFriction() {
+		
+		return friction;
+	}
+
+	/**
+	 * <p>Mutator for {@link #friction}.
+	 *
+	 * @param friction 
+	 *			the value to set {@link #friction}
+	 *
+	 * @since 1.1.1
+	 */
+	public void setFriction(float friction) {
+		
+		this.friction = friction;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -135,12 +189,12 @@ public class MotionListView extends ListView implements MotionView, VerticalMoti
 
 		if(!scrollDisabled) {
 		
-			int yAxisReading = MotionListView.processYAxisReading(event.getDirection(), 
-																  event.getFilteredOutput()[1], 
-																  event.getSensorEvent().sensor.getMaximumRange());
+			int velocity = MotionListView.processVelocity(event.getDirection(), 
+														  event.getFilteredOutput()[1], 
+														  event.getSensorEvent().sensor.getMaximumRange());
 			
-			int scrollDistance = processScrollDistance(yAxisReading);
-			int scrollDuration = processScrollDuration(yAxisReading);
+			int scrollDistance = processScrollDistance(velocity);
+			int scrollDuration = processScrollDuration(velocity);
 			
 			smoothScrollBy(scrollDistance, scrollDuration);
 		}
@@ -154,12 +208,12 @@ public class MotionListView extends ListView implements MotionView, VerticalMoti
 		
 		if(!scrollDisabled) {
 		
-			int yAxisReading = MotionListView.processYAxisReading(event.getDirection(), 
-												                  event.getFilteredOutput()[1], 
-												                  event.getSensorEvent().sensor.getMaximumRange());
+			int velocity = MotionListView.processVelocity(event.getDirection(), 
+												          event.getFilteredOutput()[1], 
+												          event.getSensorEvent().sensor.getMaximumRange());
 			
-			int scrollDistance = processScrollDistance(yAxisReading);
-			int scrollDuration = processScrollDuration(yAxisReading);
+			int scrollDistance = processScrollDistance(velocity);
+			int scrollDuration = processScrollDuration(velocity);
 			
 			smoothScrollBy(scrollDistance, scrollDuration);
 		}
@@ -177,7 +231,7 @@ public class MotionListView extends ListView implements MotionView, VerticalMoti
 	@Override
 	public int processScrollDistance(int yAxisReading) {
 		
-		return (int) (yAxisReading * Math.pow(yAxisReading, FRICTION));
+		return (int) (yAxisReading * Math.pow(yAxisReading, DRAG_COEFFICIENT));
 	}
 
 	/**
@@ -186,13 +240,12 @@ public class MotionListView extends ListView implements MotionView, VerticalMoti
 	@Override
 	public int processScrollDuration(int yAxisReading) {
 
-		return (int) (DURATION + Math.pow(yAxisReading, FRICTION));
+		return (int) (friction + Math.pow(yAxisReading, DRAG_COEFFICIENT));
 	}
 	
 	/**
-	 * <p>Takes the motion sensor reading on the Y-Axis and 
-	 * converts it to a vector with a direction. This reading 
-	 * is specific to {@link MotionListView}s.
+	 * <p>Takes the motion sensor reading on the Y-Axis and converts it to 
+	 * a vector with a direction which is essentially the <b>velocity</b>.
 	 *
 	 * @param direction
 	 *  		the {@link VERTICAL_DIRECTION} of the motion
@@ -201,24 +254,30 @@ public class MotionListView extends ListView implements MotionView, VerticalMoti
 	 * 			the sensor reading on the Y-Axis
 	 *  
 	 * @param maxSensorReading
-	 * 			the maximum value which can be reached by a 
-	 * 			sensor reading 
+	 * 			the maximum value which can be reached by a sensor reading 
 	 *  
-	 * @return the processed Y-Axis sensor reading
+	 * @return the processed Y-Axis velocity
 	 */
-	private static int processYAxisReading(VERTICAL_DIRECTION direction, 
-										   float sensorReading, 
-										   float maxSensorReading) {
+	private static int processVelocity(VERTICAL_DIRECTION direction, 
+									   float sensorReading, 
+									   float maxSensorReading) {
 		
 		switch (direction) {
 		
-			case UP:
+			case UP: {
+				
 				return (int) (-1 * (maxSensorReading + sensorReading));
+			}
 				
-			case DOWN:
+			case DOWN: {
+				
 				return (int) sensorReading;
+			}
 				
-			case NONE: default: return 0;
+			case NONE: default: { 
+				
+				return 0;
+			}
 		}
 	}
 }
