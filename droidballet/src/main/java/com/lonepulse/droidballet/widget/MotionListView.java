@@ -189,9 +189,10 @@ public class MotionListView extends ListView implements MotionView, VerticalMoti
 
 		if(!scrollDisabled) {
 		
-			int velocity = MotionListView.processVelocity(event.getDirection(), 
-														  event.getFilteredOutput()[1], 
-														  event.getSensorEvent().sensor.getMaximumRange());
+			int velocity = MotionListView.processVelocity(
+							event.getDirection(),
+							event.getFilteredOutput()[1], 
+							event.getSensorEvent().sensor.getMaximumRange());
 			
 			int scrollDistance = processScrollDistance(velocity);
 			int scrollDuration = processScrollDuration(velocity);
@@ -208,9 +209,10 @@ public class MotionListView extends ListView implements MotionView, VerticalMoti
 		
 		if(!scrollDisabled) {
 		
-			int velocity = MotionListView.processVelocity(event.getDirection(), 
-												          event.getFilteredOutput()[1], 
-												          event.getSensorEvent().sensor.getMaximumRange());
+			int velocity = MotionListView.processVelocity(
+							event.getDirection(), 
+							event.getFilteredOutput()[1], 
+							event.getSensorEvent().sensor.getMaximumRange());
 			
 			int scrollDistance = processScrollDistance(velocity);
 			int scrollDuration = processScrollDuration(velocity);
@@ -258,26 +260,15 @@ public class MotionListView extends ListView implements MotionView, VerticalMoti
 	 *  
 	 * @return the processed Y-Axis velocity
 	 */
-	private static int processVelocity(VERTICAL_DIRECTION direction, 
-									   float sensorReading, 
-									   float maxSensorReading) {
-		
+	private static int processVelocity(VERTICAL_DIRECTION direction, float sensorReading, float maxSensorReading) {
+
 		switch (direction) {
-		
-			case UP: {
-				
-				return (int) (-1 * (maxSensorReading + sensorReading));
-			}
-				
-			case DOWN: {
-				
-				return (int) sensorReading;
-			}
-				
-			case NONE: default: { 
-				
-				return 0;
-			}
+
+			case UP: return (int) (-1 * (maxSensorReading + sensorReading));
+	
+			case DOWN: return (int) sensorReading;
+	
+			case NONE: default: return 0;
 		}
 	}
 }
