@@ -26,20 +26,19 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
 import android.view.ViewGroup;
 
+import com.lonepulse.droidballet.queue.EventQueue;
 import com.lonepulse.droidballet.registry.MotionViewRegistry;
 
 /**
- * <p>"<i>The Higgs field is a possibly discovered, ubiquitous quantum field 
+ * <p>"<i>The Higgs-Field is a possibly discovered, ubiquitous quantum field 
  * supposed to be responsible for giving elementary particles their masses.</i>"</p>
  * 
  * <p>This enum is responsible for maintaining a single instance of itself which 
  * can be used by Widgets  and {@link ViewGroup}s to register themselves for changes 
- * in device orientation and respond to the associated motion.</p> 
- *
- * TODO various "MotionDetector"s can be plugged into the {@link HiggsFieldConfiguration}... e.g VERTICAL - takes a sensor event and returns a VerticalScrollEvent
+ * in device orientation and respond to the associated motion.</p>
  * 
  * @version 1.0.0
- * 
+ * <br><br>
  * @author <a href="mailto:lahiru@lonepulse.com">Lahiru Sahan Jayasinghe</a>
  */
 public enum HiggsField implements HiggsMechanism {
@@ -124,6 +123,7 @@ public enum HiggsField implements HiggsMechanism {
 		setState(HIGGS_FIELD_STATE.ACTIVE);
 		
 		sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
+		EventQueue.INSTANCE.startConsuming();
 	}
 	
 	/**
@@ -135,6 +135,7 @@ public enum HiggsField implements HiggsMechanism {
 		setState(HIGGS_FIELD_STATE.INACTIVE);
 		
 		sensorManager.unregisterListener(this);
+		EventQueue.INSTANCE.stopConsuming();
 	}
 	
 	/**
@@ -143,7 +144,7 @@ public enum HiggsField implements HiggsMechanism {
 	@Override
 	public void onSensorChanged(SensorEvent sensorEvent) {
 		
-		if(getState().equals(HIGGS_FIELD_STATE.INACTIVE)) return; //HiggsField has been deactivated
+		if(getState().equals(HIGGS_FIELD_STATE.INACTIVE)) return;
 
 		MotionViewRegistry.INSTANCE.notify(sensorEvent);
 	}
@@ -152,5 +153,5 @@ public enum HiggsField implements HiggsMechanism {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onAccuracyChanged(Sensor sensor, int accuracy) {} //TODO provide impl for onAccuracyChanged()? 
+	public void onAccuracyChanged(Sensor sensor, int accuracy) {} 
 }

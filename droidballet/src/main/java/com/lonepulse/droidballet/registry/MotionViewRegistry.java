@@ -30,6 +30,8 @@ import android.hardware.SensorEvent;
 import com.lonepulse.droidballet.detector.MotionDetector;
 import com.lonepulse.droidballet.listener.MotionEvent;
 import com.lonepulse.droidballet.listener.MotionListener;
+import com.lonepulse.droidballet.queue.EventQueue;
+import com.lonepulse.droidballet.queue.MotionEventResolutionJob;
 import com.lonepulse.droidballet.resolver.HorizontalMotionEventResolver;
 import com.lonepulse.droidballet.resolver.MotionEventResolver;
 import com.lonepulse.droidballet.resolver.VerticalMotionEventResolver;
@@ -151,9 +153,11 @@ public enum MotionViewRegistry implements MotionListenerRegistry, MotionEventRes
 	public void notify(SensorEvent sensorEvent) {
 
 		for (MotionEventResolver motionEventResolver : motionEventResolvers) {
+
+			MotionEventResolutionJob.Builder builder 
+				= new MotionEventResolutionJob.Builder(sensorEvent, motionListeners, motionEventResolver);
 			
-			//TODO defensive copy the registry?
-			motionEventResolver.resolve(sensorEvent, motionListeners);
+			EventQueue.INSTANCE.enqueue(builder.build());
 		}
 	}
 }

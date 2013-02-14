@@ -24,8 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import android.annotation.SuppressLint;
-
 /**
  * <p>An abstract implementation of a {@link SmoothingFilter} which handles the algorithm 
  * <i>security</i> and <i>execution</i>. 
@@ -44,7 +42,6 @@ public abstract class AbstractSmoothingFilter implements SmoothingFilter {
 	 * <p>A {@link Map} which contains all the arguments used in the filter 
 	 * and their associated types. 
 	 */
-	@SuppressLint("UseSparseArrays")
 	private Map<Integer, Class<?>> argTypes = new HashMap<Integer, Class<?>>();
 	
 

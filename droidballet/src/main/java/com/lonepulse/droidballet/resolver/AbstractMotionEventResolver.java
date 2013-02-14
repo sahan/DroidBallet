@@ -86,6 +86,8 @@ public abstract class AbstractMotionEventResolver<L extends MotionListener,
 	 */
 	public void resolve(SensorEvent sensorEvent, Set<MotionListener> motionListeners) {
 	
+		//TODO implement a sensorEvent queue to which new events are added and dequeued at by the resolver
+		
 		Set<L> filteredMotionListeners = filterMotionListeners(motionListeners);
 		
 		E motionEvent = generateMotionEvent(sensorEvent);

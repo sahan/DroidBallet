@@ -30,7 +30,7 @@ import android.content.Context;
  * <p>Use {@link HiggsFieldConfiguration.Builder} to create an instance.</p>
  * 
  * @version 1.0.0
- * 
+ * <br><br>
  * @author <a href="mailto:lahiru@lonepulse.com">Lahiru Sahan Jayasinghe</a>
  */
 public class HiggsFieldConfiguration {
@@ -40,10 +40,10 @@ public class HiggsFieldConfiguration {
 	 * {@link HiggsFieldConfiguration}.</p>
 	 * 
 	 * @version 1.0.0
-	 * 
+	 * <br><br>
 	 * @author <a href="mailto:lahiru@lonepulse.com">Lahiru Sahan Jayasinghe</a>
 	 */
-	public static class Builder {
+	public static final class Builder {
 		
 		
 		/**
