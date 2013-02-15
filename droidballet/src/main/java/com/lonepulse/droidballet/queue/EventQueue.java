@@ -82,7 +82,7 @@ public enum EventQueue implements QueueController {
 	private static volatile AtomicBoolean consume;
 	
 	/**
-	 * <p>An {@link ExecutorService} modeled using {@link Executors#newScheduledThreadPool(int)} 
+	 * <p>An {@link ExecutorService} modeled using {@link Executors#newSingleThreadExecutor()} 
 	 * which will be used to execute worker threads which run {@link #CONSUMER} instances.
 	 */
 	private static final ExecutorService CONSUMER_EXECUTOR;
