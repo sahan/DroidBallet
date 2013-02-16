@@ -35,7 +35,6 @@ import com.lonepulse.droidballet.queue.MotionEventResolutionJob;
 import com.lonepulse.droidballet.resolver.HorizontalMotionEventResolver;
 import com.lonepulse.droidballet.resolver.MotionEventResolver;
 import com.lonepulse.droidballet.resolver.VerticalMotionEventResolver;
-import com.lonepulse.droidballet.widget.MotionView;
 
 /**
  * <p>A basic implementation of {@link MotionListenerRegistry} which maintains 
