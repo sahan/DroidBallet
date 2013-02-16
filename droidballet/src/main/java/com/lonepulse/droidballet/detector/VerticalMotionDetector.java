@@ -83,37 +83,45 @@ public class VerticalMotionDetector implements MotionDetector<VerticalMotionEven
 	 * <p>Future implementations may support {@link Sensor#TYPE_GYROSCOPE}.</p>
 	 */
 	@Override
-	public <U extends SensorEvent> VerticalMotionEvent getMotionEvent(final U sensorEvent) {
-
-		Sensor sensor = sensorEvent.sensor;
-
-		if (sensor.getType() != Sensor.TYPE_ACCELEROMETER) { 
-
-			return null;
-		}
-
-		final float[] input = sensorEvent.values;
-		final float[] output = new float[input.length];
+	public <U extends SensorEvent> VerticalMotionEvent getMotionEvent(final U sensorEvent)
+	throws MotionDetectorException {
 
 		try {
-
-			smoothingFilter.filter(input, output, null);
-		} 
-		catch (SmoothingFilterException sfe) {
-
-			Log.w(getClass().getName(), 
-				  "Failed to execute " + smoothingFilter.getClass().getName() + " on " + input);
+			
+			Sensor sensor = sensorEvent.sensor;
+	
+			if (sensor.getType() != Sensor.TYPE_ACCELEROMETER) { 
+	
+				return null;
+			}
+	
+			final float[] input = sensorEvent.values;
+			final float[] output = new float[input.length];
+	
+			try {
+	
+				smoothingFilter.filter(input, output, null);
+			} 
+			catch (SmoothingFilterException sfe) {
+	
+				Log.w(getClass().getName(), 
+					  "Failed to execute " + smoothingFilter.getClass().getName() + " on " + input);
+			}
+	
+			float max = sensorEvent.sensor.getMaximumRange();
+			float mid = max / 2.0f;
+	
+			float midRangeHigh = mid + 1.0f;
+			float midRangeLow = mid - 1.0f;
+	
+			VERTICAL_DIRECTION direction = processVerticalDirection(output, midRangeHigh, midRangeLow);
+			
+			return new VerticalMotionEvent(sensorEvent, direction, output);
 		}
+		catch (Exception e) {
 
-		float max = sensorEvent.sensor.getMaximumRange();
-		float mid = max / 2.0f;
-
-		float midRangeHigh = mid + 1.0f;
-		float midRangeLow = mid - 1.0f;
-
-		VERTICAL_DIRECTION direction = processVerticalDirection(output, midRangeHigh, midRangeLow);
-		
-		return new VerticalMotionEvent(sensorEvent, direction, output);
+			throw new MotionDetectorException(getClass(), sensorEvent, e);
+		}
 	}
 
 	/**

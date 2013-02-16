@@ -79,6 +79,10 @@ public interface HiggsMechanism extends SensorEventListener {
 	 * <p>This should be invoked in the {@link Activity}'s {@code onResume()} 
 	 * lifecycle callback method to <b>disable</b> all <i>motion views</i>.</p>
 	 * 
+	 * @throws HiggsFieldUninitializedException
+	 * 			if initialization failed or if the {@link HiggsField#INSTANCE} 
+	 * 			has already been initialized
+	 * <br><br>
 	 * @since 1.0.0
 	 */
 	public abstract void activate();
@@ -90,6 +94,10 @@ public interface HiggsMechanism extends SensorEventListener {
 	 * <p>This should be invoked in the {@link Activity}'s {@code onPause()} 
 	 * lifecycle callback method to <b>disable</b> all <i>motion views</i>.</p>
 	 * 
+	 * @throws HiggsFieldUninitializedException
+	 * 			if initialization failed or if the {@link HiggsField#INSTANCE} 
+	 * 			has already been initialized
+	 * <br><br>
 	 * @since 1.0.0
 	 */
 	public abstract void deactivate();

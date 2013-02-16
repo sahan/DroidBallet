@@ -158,6 +158,8 @@ public enum MotionViewRegistry implements MotionListenerRegistry, MotionEventRes
 				= new MotionEventResolutionJob.Builder(sensorEvent, motionListeners, motionEventResolver);
 			
 			EventQueue.INSTANCE.enqueue(builder.build());
+			
+			motionEventResolver.resolve(sensorEvent, motionListeners);
 		}
 	}
 }

@@ -45,14 +45,12 @@ public interface MotionDetector<T extends MotionEvent> {
 	 * 			motion event of the current detector type cannot be created using 
 	 * 			the {@link SensorEvent}. 
 	 * 
+	 * @throws MotionDetectorException
+	 * 			if there is a failure in detecting motion using the {@link SensorEvent} 
+	 * 			produced by the sensor
+	 * <br><br>
 	 * @since 1.0.0
 	 */
-	public <U extends SensorEvent> T getMotionEvent(U sensorEvent);
-	
-	/* 
-	 * TODO So this motion detector is one that contains all the equations to 
-	 * process sensor data & give meaning motion info wrapped in a MotionEvent.
-	 * 
-	 * These event are then passed into the view by calling the their listeners.
-	 */
+	public <U extends SensorEvent> T getMotionEvent(U sensorEvent)
+	throws MotionDetectorException;
 }
