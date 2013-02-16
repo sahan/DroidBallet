@@ -5,7 +5,7 @@
 	  
 	<groupId>com.lonepulse</groupId>
 	<artifactId>droidballet-parent</artifactId>
-	<version>0.1.0</version>
+	<version>0.1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<parent>
@@ -154,12 +154,21 @@
 							<artifacts>
 								<artifact>
 									<type>jar</type>
-									<file>${build.directory}/${build.finalName}.jar</file>
+									<file>${project.build.directory}/${project.build.finalName}.jar</file>
 								</artifact>
 							</artifacts>
 						</configuration>
 					</execution>
 				</executions>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.2.2</version>
+				<configuration>
+					<autoVersionSubmodules>true</autoVersionSubmodules>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
