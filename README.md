@@ -50,16 +50,13 @@ Use this on a portrait activity using the steps outlined below.
 
 1. Configure `AndroidManifest.xml` to use DroidBallet's application instance.
 
-```xml
-<manifest 
-	...
-	<application
-        android:name="com.lonepulse.droidballet.app.MotionApplication"
-    ...
-    </application>
-    ...
-</manifest>    
-```   
+<pre>
+<font color="#00ABDF">&lt;manifest </font>
+...
+    <font color="#00ABDF">&lt;application </font>
+            <font color="#04BA31">android:name=</font><font color="#FB5D5D">"com.lonepulse.droidballet.app.MotionApplication"</font>
+...
+</pre>   
 <br/>
 
 2. Declare the `LinearMotionListView` in your layout.
