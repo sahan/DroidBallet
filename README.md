@@ -48,7 +48,7 @@ The current motion widgets arsenal consists of a single component named `LinearM
 Use this on a portrait activity using the steps outlined below.   
 <br/>   
 
-###1. Configure `AndroidManifest.xml` to use DroidBallet's application instance.   
+#####1. Configure `AndroidManifest.xml` to use DroidBallet's application instance.   
 
 <pre>
 <font color="#00ABDF">&lt;manifest </font>
@@ -56,10 +56,17 @@ Use this on a portrait activity using the steps outlined below.
     <font color="#00ABDF">&lt;application </font>
             <font color="#04BA31">android:name=</font><font color="#FB5D5D">"com.lonepulse.droidballet.app.MotionApplication"</font>
 ...
-</pre>   
-<br/>
+</pre>
+<pre>
+<font color="##01A9DB">&lt;manifest </font>
+...
+    <font color="##01A9DB">&lt;application </font>
+            <font color="#04B431">android:name=</font><font color="#FA5858">"com.sample.app.ApplicationServiceImpl"</font>
+...
+</pre>
+   <br/>
 
-###2. Declare the `LinearMotionListView` in your layout.
+#####2. Declare the `LinearMotionListView` in your layout.
 
 ```xml
 <com.lonepulse.droidballet.widget.LinearMotionListView
@@ -70,7 +77,7 @@ Use this on a portrait activity using the steps outlined below.
 > Else you could instantiate `LinearMotionListView` within your activity and set it as the *content view*.
  
 <br/>
-###3. Override `onResume()` and `onPause()` to activate and deactivate the motion widgets in the smallest possible scope.
+#####3. Override `onResume()` and `onPause()` to activate and deactivate the motion widgets in the smallest possible scope.
 
 ######Activate 
 ```java
