@@ -20,6 +20,8 @@ package com.lonepulse.droidballet.core;
  * #L%
  */
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.Context;
@@ -59,6 +61,12 @@ public enum HiggsField implements HiggsMechanism {
 	 * initialized via {@link #initialize(HiggsFieldConfiguration)}.
 	 */
 	private volatile AtomicBoolean initialized = new AtomicBoolean(false);
+	
+	/**
+	 * <p>An {@link Executors#newSingleThreadExecutor()} instance which accepts motion event 
+	 * producers for changes in sensor readings fired on {@link #onSensorChanged(SensorEvent)}.
+	 */
+	private ExecutorService PRODUCER_EXECUTOR_SERVICE;
 	
 	/**
 	 * <p>The instance of {@link HIGGS_FIELD_STATE} which indicates the <b>current</b> 
@@ -140,6 +148,7 @@ public enum HiggsField implements HiggsMechanism {
 			
 			setState(HIGGS_FIELD_STATE.ACTIVE);
 			
+			PRODUCER_EXECUTOR_SERVICE = Executors.newSingleThreadExecutor();
 			sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
 			EventQueue.INSTANCE.startConsuming();
 		}
@@ -159,6 +168,7 @@ public enum HiggsField implements HiggsMechanism {
 			setState(HIGGS_FIELD_STATE.INACTIVE);
 			
 			sensorManager.unregisterListener(this);
+			PRODUCER_EXECUTOR_SERVICE.shutdownNow();
 			EventQueue.INSTANCE.stopConsuming();
 		}
 	}
@@ -171,24 +181,31 @@ public enum HiggsField implements HiggsMechanism {
 
 		if(getState().equals(HIGGS_FIELD_STATE.INACTIVE)) return;
 		
-		boolean aquired = EventQueue.CONSUMER_LOCK.tryLock();
-		
-		if(aquired) {
-				
-			try {
-					
-				MotionViewRegistry.INSTANCE.notify(sensorEvent);
-				EventQueue.ENQUEUED.signal();
-			}
-			finally {
-						
-				EventQueue.CONSUMER_LOCK.unlock();
-			}
-		}
-		else {
+		PRODUCER_EXECUTOR_SERVICE.submit(new Runnable() {
 			
-			MotionViewRegistry.INSTANCE.notify(sensorEvent);
-		}
+			@Override
+			public void run() {
+				
+				boolean aquired = EventQueue.CONSUMER_LOCK.tryLock();
+				
+				if(aquired) {
+					
+					try {
+						
+						MotionViewRegistry.INSTANCE.notify(sensorEvent);
+						EventQueue.ENQUEUED.signal();
+					}
+					finally {
+						
+						EventQueue.CONSUMER_LOCK.unlock();
+					}
+				}
+				else {
+					
+					MotionViewRegistry.INSTANCE.notify(sensorEvent);
+				}
+			}
+		});
 	}
 	
 	/**
