@@ -20,8 +20,6 @@ package com.lonepulse.droidballet.core;
  * #L%
  */
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.Context;
@@ -55,14 +53,6 @@ public enum HiggsField implements HiggsMechanism {
 	 */
 	INSTANCE;
 
-	
-	/**
-	 * <p>An {@link ExecutorService} modeled using {@link Executors#newSingleThreadExecutor()} 
-	 * which will be used to execute worker threads that run <i>PRODUCERS</i>.</p>
-	 * 
-	 * <p>See {@link #onSensorChanged(SensorEvent)};</p>
-	 */
-	private static final ExecutorService PRODUCER_EXECUTOR = Executors.newSingleThreadExecutor();
 	
 	/**
 	 * <p>A flag which determines if the HiggsField has already been 
@@ -178,19 +168,27 @@ public enum HiggsField implements HiggsMechanism {
 	 */
 	@Override
 	public void onSensorChanged(final SensorEvent sensorEvent) {
-		
+
 		if(getState().equals(HIGGS_FIELD_STATE.INACTIVE)) return;
 		
-		Runnable producer = new Runnable() {
-					
-			@Override
-			public void run() {
-						
-				MotionViewRegistry.INSTANCE.notify(sensorEvent);
-			}
-		};
+		boolean aquired = EventQueue.CONSUMER_LOCK.tryLock();
+		
+		if(aquired) {
 				
-		PRODUCER_EXECUTOR.execute(producer);
+			try {
+					
+				MotionViewRegistry.INSTANCE.notify(sensorEvent);
+				EventQueue.ENQUEUED.signal();
+			}
+			finally {
+						
+				EventQueue.CONSUMER_LOCK.unlock();
+			}
+		}
+		else {
+			
+			MotionViewRegistry.INSTANCE.notify(sensorEvent);
+		}
 	}
 	
 	/**

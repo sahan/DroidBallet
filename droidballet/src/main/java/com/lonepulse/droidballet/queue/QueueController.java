@@ -60,7 +60,7 @@ public interface QueueController {
 	 * @since 1.1.0
 	 */
 	public void startConsuming();
-	
+
 	/**
 	 * <p>Terminates the consumption and execution of {@link MotionEventResolutionJob}s 
 	 * which are enqueued.
